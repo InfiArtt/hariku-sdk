@@ -1,0 +1,25 @@
+{
+    "manifest": {
+        "language_name": "English",
+        "language_code": "en",
+        "translator": "Hariku SDK",
+        "email": "you@example.com",
+        "version": "1.0",
+        "core_version": "2.0",
+        "rtl": false
+    },
+    "messages": {
+        "ext_name": "Daily Goal",
+        "action_say_goal": "Say my goal for today",
+        "action_open_settings": "Open the Daily Goal settings",
+        "label_goal": "Your goal for today:",
+        "label_speech": "When other speech is still going:",
+        "speech_wait": "Wait for it to finish",
+        "speech_interrupt": "Interrupt it",
+        "label_say_date": "Say the date first",
+        "goal": "Your goal: {goal}.",
+        "date_and_goal": "{weekday}, {day} {month}. Your goal: {goal}.",
+        "no_goal": "You have no goal yet. Write one in Preferences, Daily Goal.",
+        "not_saved": "Sorry, Daily Goal couldn't save your settings."
+    }
+}

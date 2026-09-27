@@ -1,0 +1,26 @@
+{
+    "manifest": {
+        "language_name": "English",
+        "language_code": "en",
+        "translator": "Hariku SDK",
+        "email": "you@example.com",
+        "version": "1.0",
+        "core_version": "2.9",
+        "rtl": false
+    },
+    "messages": {
+        "action_read_list": "Read my shopping list",
+        "action_clear_list": "Clear my shopping list",
+        "intent_title": "Shopping list",
+        "list_empty": "Your shopping list is empty.",
+        "list_items": "{count} on your shopping list: {items}.",
+        "clear_title": "Shopping list",
+        "clear_question": "Remove all {count} items from your shopping list?",
+        "list_cleared": "Your shopping list is empty now.",
+        "confirm_add": "Add \"{item}\" to your shopping list?",
+        "added": "Added {item}. {count} on your list.",
+        "already_there": "{item} is already on your list.",
+        "list_full": "Your shopping list is full.",
+        "not_saved": "Sorry, your shopping list couldn't be saved."
+    }
+}

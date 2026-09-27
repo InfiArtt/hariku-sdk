@@ -1,0 +1,16 @@
+{
+    "manifest": {
+        "language_name": "English",
+        "language_code": "en",
+        "translator": "Hariku SDK",
+        "email": "you@example.com",
+        "version": "1.0",
+        "core_version": "2.0",
+        "rtl": false
+    },
+    "messages": {
+        "action_greet": "Greet me",
+        "hello": "Hello! Nice to hear from you.",
+        "time_now": "It's {time}."
+    }
+}

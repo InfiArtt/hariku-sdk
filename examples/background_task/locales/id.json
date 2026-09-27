@@ -1,0 +1,21 @@
+{
+    "manifest": {
+        "language_name": "Bahasa Indonesia",
+        "language_code": "id",
+        "translator": "Hariku SDK",
+        "email": "you@example.com",
+        "version": "1.0",
+        "core_version": "2.0",
+        "rtl": false
+    },
+    "messages": {
+        "action_count": "Hitung file di folder Dokumenku",
+        "counting": "Menghitung file di {folder}. Tekan tombolnya lagi untuk berhenti.",
+        "stopped": "Penghitungan dihentikan.",
+        "failed": "Maaf, file-filenya tidak bisa dihitung.",
+        "result": "Ada {files} file di {folder}, totalnya {size}. Butuh {seconds} detik.",
+        "size_kb": "{value} kilobita",
+        "size_mb": "{value} megabita",
+        "size_gb": "{value} gigabita"
+    }
+}

@@ -1,0 +1,25 @@
+{
+    "manifest": {
+        "language_name": "Bahasa Indonesia",
+        "language_code": "id",
+        "translator": "Hariku SDK",
+        "email": "you@example.com",
+        "version": "1.0",
+        "core_version": "2.0",
+        "rtl": false
+    },
+    "messages": {
+        "ext_name": "Tujuan Harian",
+        "action_say_goal": "Sebutkan tujuanku hari ini",
+        "action_open_settings": "Buka pengaturan Tujuan Harian",
+        "label_goal": "Tujuanmu hari ini:",
+        "label_speech": "Kalau masih ada ucapan lain:",
+        "speech_wait": "Tunggu sampai selesai",
+        "speech_interrupt": "Potong ucapannya",
+        "label_say_date": "Sebutkan tanggalnya dulu",
+        "goal": "Tujuanmu: {goal}.",
+        "date_and_goal": "{weekday}, {day} {month}. Tujuanmu: {goal}.",
+        "no_goal": "Kamu belum punya tujuan. Tulis di Pengaturan, Tujuan Harian.",
+        "not_saved": "Maaf, Tujuan Harian tidak bisa menyimpan pengaturanmu."
+    }
+}

@@ -1,0 +1,116 @@
+name: Sync from Hariku core
+
+# Keeps this SDK in step with Hariku (github.com/InfiArtt/hariku-core):
+#   1. finds the latest Hariku release tag;
+#   2. copies from that tag DEVELOPERS.md, tools/packager.py and .vscode/,
+#      and from main template_extension/ and docs/en/extension_store/ as
+#      store_guidelines/ (policies aren't versioned; never the store's
+#      internal review_guidelines.txt); SYNCED_FROM.md records both refs and
+#      their commits;
+#   3. checks the template and every example;
+#   4. commits and pushes whatever changed;
+#   5. when this repository has no release named after that Hariku tag yet,
+#      publishes Hariku_V2_Developer_SDK.zip as one.
+# It runs only in InfiArtt/hariku-sdk: in a repository made from the template,
+# the job is skipped (and this file can be deleted).
+
+on:
+  schedule:
+    - cron: "23 2 * * *"      # every day at 02:23 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sdk-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Sync and release
+    if: github.repository == 'InfiArtt/hariku-sdk'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write      # to push the synced files and publish the SDK release
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Check out the SDK
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Find the latest Hariku release
+        id: core
+        run: python .github/scripts/sdk_sync.py latest >> "$GITHUB_OUTPUT"
+
+      - name: Fetch Hariku core at that tag and at main
+        id: refs
+        env:
+          TAG: ${{ steps.core.outputs.tag }}
+        run: |
+          set -euo pipefail
+          git clone --quiet --depth 1 --branch "$TAG" https://github.com/InfiArtt/hariku-core.git "$RUNNER_TEMP/core-tag"
+          git clone --quiet --depth 1 https://github.com/InfiArtt/hariku-core.git "$RUNNER_TEMP/core-main"
+          echo "tag_sha=$(git -C "$RUNNER_TEMP/core-tag" rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "main_sha=$(git -C "$RUNNER_TEMP/core-main" rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Copy the synced files
+        env:
+          TAG: ${{ steps.core.outputs.tag }}
+          RELEASE_URL: ${{ steps.core.outputs.release_url }}
+          TAG_SHA: ${{ steps.refs.outputs.tag_sha }}
+          MAIN_SHA: ${{ steps.refs.outputs.main_sha }}
+        run: >
+          python .github/scripts/sdk_sync.py copy
+          --tag "$TAG" --tag-dir "$RUNNER_TEMP/core-tag" --tag-sha "$TAG_SHA"
+          --main-dir "$RUNNER_TEMP/core-main" --main-sha "$MAIN_SHA"
+          --release-url "$RELEASE_URL"
+
+      - name: Check the template and every example
+        run: python tools/check_extension.py --all
+
+      - name: Test the SDK's tools
+        run: |
+          python -m pip install --quiet pytest
+          python -m pytest tests -q
+
+      - name: Commit and push what changed
+        env:
+          TAG: ${{ steps.core.outputs.tag }}
+          MAIN_SHA: ${{ steps.refs.outputs.main_sha }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A -- DEVELOPERS.md tools/packager.py .vscode store_guidelines template_extension SYNCED_FROM.md
+          if git diff --cached --quiet; then
+            echo "Nothing changed."
+          else
+            git commit --quiet -m "Sync from Hariku core $TAG and main ${MAIN_SHA:0:7}"
+            git push --quiet
+          fi
+
+      - name: Publish the SDK for this Hariku release
+        env:
+          TAG: ${{ steps.core.outputs.tag }}
+          RELEASE_URL: ${{ steps.core.outputs.release_url }}
+          TAG_SHA: ${{ steps.refs.outputs.tag_sha }}
+          MAIN_SHA: ${{ steps.refs.outputs.main_sha }}
+        run: |
+          set -euo pipefail
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            echo "The SDK release $TAG is out already."
+            exit 0
+          fi
+          python .github/scripts/sdk_sync.py zip --output "$RUNNER_TEMP/Hariku_V2_Developer_SDK.zip"
+          python .github/scripts/sdk_sync.py notes --tag "$TAG" --release-url "$RELEASE_URL" \
+            --tag-sha "$TAG_SHA" --main-sha "$MAIN_SHA" > "$RUNNER_TEMP/notes.md"
+          gh release create "$TAG" "$RUNNER_TEMP/Hariku_V2_Developer_SDK.zip" \
+            --title "Hariku Developer SDK for Hariku ${TAG#v}" \
+            --notes-file "$RUNNER_TEMP/notes.md" \
+            --target "$(git rev-parse HEAD)"

@@ -1,0 +1,26 @@
+{
+    "manifest": {
+        "language_name": "Bahasa Indonesia",
+        "language_code": "id",
+        "translator": "Hariku SDK",
+        "email": "you@example.com",
+        "version": "1.0",
+        "core_version": "2.9",
+        "rtl": false
+    },
+    "messages": {
+        "action_read_list": "Bacakan daftar belanja",
+        "action_clear_list": "Kosongkan daftar belanja",
+        "intent_title": "Daftar belanja",
+        "list_empty": "Daftar belanjamu kosong.",
+        "list_items": "Ada {count} di daftar belanjamu: {items}.",
+        "clear_title": "Daftar belanja",
+        "clear_question": "Hapus semua {count} barang dari daftar belanjamu?",
+        "list_cleared": "Daftar belanjamu sekarang kosong.",
+        "confirm_add": "Tambahkan \"{item}\" ke daftar belanjamu?",
+        "added": "{item} sudah ditambahkan. Ada {count} di daftarmu.",
+        "already_there": "{item} sudah ada di daftarmu.",
+        "list_full": "Daftar belanjamu sudah penuh.",
+        "not_saved": "Maaf, daftar belanjamu tidak bisa disimpan."
+    }
+}

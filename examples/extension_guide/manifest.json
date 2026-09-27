@@ -1,0 +1,9 @@
+{
+    "name": "Proverbs",
+    "version": "1.0.0",
+    "author": "Hariku SDK",
+    "description": "An example from the Hariku Developer SDK that ships its own guide: it says an old proverb in English or Indonesian, and opens its guide from Help, the Extension Manager, Aruna or its own command. Needs Hariku 2.11.",
+    "main": "main.py",
+    "language": "en",
+    "minimum_core_version": "2.11"
+}

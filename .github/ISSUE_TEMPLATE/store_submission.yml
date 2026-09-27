@@ -1,0 +1,123 @@
+name: Extension Store submission
+description: Submit a new extension, or an update, to the Hariku Extension Store for review.
+title: "[Store] Extension name vX.Y.Z"
+labels: ["store submission"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before you submit, read store_guidelines/submission_guide.txt and store_guidelines/coding_standards.txt, and run `python tools/check_extension.py your_extension`. Every extension is reviewed for security, for how it works, and for accessibility with a screen reader. Reviews aim to finish within 7 business days.
+
+        GitHub doesn't take .hrk files as attachments. Link to your .hrk instead (for example, the release asset your build workflow attached), or attach it inside a .zip.
+  - type: dropdown
+    id: kind
+    attributes:
+      label: New extension or update?
+      options:
+        - A new extension
+        - An update to an extension already in the store
+    validations:
+      required: true
+  - type: input
+    id: name
+    attributes:
+      label: Extension name
+      description: As in the "name" field of your manifest.json.
+    validations:
+      required: true
+  - type: input
+    id: ext_id
+    attributes:
+      label: Extension id
+      description: The folder name, which is also the name of the .hrk file (lowercase_with_underscores).
+      placeholder: my_extension
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The "version" in manifest.json. An update needs a higher version than the one in the store.
+      placeholder: "1.0.0"
+    validations:
+      required: true
+  - type: input
+    id: hrk
+    attributes:
+      label: The .hrk package
+      description: A link to the .hrk file, made with tools/packager.py (tools/pack.py uses it).
+      placeholder: https://github.com/you/your-extension/releases/download/v1.0.0/my_extension.hrk
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What the extension does, who it is for, and its features, written for users who know nothing about it yet.
+    validations:
+      required: true
+  - type: textarea
+    id: changelog
+    attributes:
+      label: Changelog
+      description: For a first submission, the first version's features. For an update, what changed since the version in the store.
+      placeholder: |
+        1.0.0 (2026-10-01)
+        - First release
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Hariku versions
+      description: The "minimum_core_version" in your manifest, and the newest Hariku you tested with.
+      placeholder: "Needs 2.9; tested with 2.10.0"
+    validations:
+      required: true
+  - type: textarea
+    id: privacy
+    attributes:
+      label: Network and data
+      description: What your extension stores, and where; what it sends over the network, to whom, and why. Write "Nothing leaves the computer" if that is so.
+    validations:
+      required: true
+  - type: textarea
+    id: keys
+    attributes:
+      label: Keys and commands
+      description: Every hotkey the extension registers (the default keys) and what it does, and the sentences Aruna understands for it.
+  - type: input
+    id: source
+    attributes:
+      label: Source code (optional)
+      description: A link to the source, if it is public.
+  - type: textarea
+    id: extras
+    attributes:
+      label: Anything else (optional)
+      description: A demo walkthrough (text or audio), special setup, or why the extension needs something the guidelines usually ask you to avoid.
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I am the author of this extension, or I have written permission from the author to distribute it.
+          required: true
+        - label: manifest.json has every required field, and tools/check_extension.py reports no errors.
+          required: true
+        - label: I packed it with tools/packager.py (or tools/pack.py), not with another ZIP tool.
+          required: true
+        - label: I tested it on the latest Hariku release, both unpacked and installed from the .hrk, with no errors in Hariku's log.
+          required: true
+        - label: It defines teardown(), and stops its timers and threads there.
+          required: true
+        - label: Nothing slow runs on the UI thread; network and heavy work use core.api.run_thread() or another worker thread.
+          required: true
+        - label: It stores data only through core.api (load_data, save_data, get_storage_dir), with no hardcoded paths.
+          required: true
+        - label: I tested every window and setting with a screen reader (NVDA or JAWS) and the keyboard alone; each control has its label made right before it.
+          required: true
+        - label: It sends nothing without the user's knowledge, has no tracking or ads, and its code isn't obfuscated.
+          required: true
+        - label: I agree to the review process and the code of conduct in store_guidelines/.
+          required: true

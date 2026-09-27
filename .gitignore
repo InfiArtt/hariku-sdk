@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Packed extensions and builds
+*.hrk
+dist/
+build/
+Hariku_V2_Developer_SDK.zip
+
+# Operating systems
+Thumbs.db
+Desktop.ini
+.DS_Store

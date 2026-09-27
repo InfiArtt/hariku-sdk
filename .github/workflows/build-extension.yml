@@ -1,0 +1,84 @@
+name: Check and build extensions
+
+# For your own extension repository (made with "Use this template") and for the
+# SDK itself:
+#   - on every push and pull request, tools/check_extension.py checks every
+#     top-level folder that has a manifest.json, and every folder in examples/;
+#   - on a tag such as v1.0.0, each top-level extension folder (not
+#     template_extension/ or examples/) is packed into a .hrk with Hariku's
+#     packager, and the .hrk files are attached to the GitHub release for that
+#     tag (made if there is none yet).
+
+on:
+  push:
+    branches: ["**"]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-extension-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Check extensions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      # Hariku runs extensions on Python 3.10: compile them with the same.
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Check every extension
+        run: python tools/check_extension.py --all
+
+      - name: Test the SDK's tools
+        if: hashFiles('tests/test_check_extension.py') != ''
+        run: |
+          python -m pip install --quiet pytest
+          python -m pytest tests -q
+
+  release:
+    name: Pack and attach to the release
+    needs: check
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write      # to create the release and upload the .hrk files
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Pack every extension folder
+        run: python tools/pack.py --all --output dist
+
+      - name: Attach the .hrk files to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          files=(dist/*.hrk)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "::notice::No extension folders to pack (template_extension/ and examples/ are left out)."
+            exit 0
+          fi
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release upload "$TAG" "${files[@]}" --clobber
+          else
+            gh release create "$TAG" "${files[@]}" --title "$TAG" --generate-notes --verify-tag
+          fi

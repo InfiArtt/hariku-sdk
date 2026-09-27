@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: A problem in the Hariku app
+    url: https://github.com/InfiArtt/hariku/issues
+    about: Bugs and ideas for Hariku itself, not the SDK.
+  - name: A security problem
+    url: https://github.com/InfiArtt/hariku-sdk/blob/main/store_guidelines/security_policy.txt
+    about: Please report it privately as the security policy describes, not in a public issue.

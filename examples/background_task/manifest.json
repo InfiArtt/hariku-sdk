@@ -1,0 +1,9 @@
+{
+    "name": "Folder Counter",
+    "version": "1.0.0",
+    "author": "Hariku SDK",
+    "description": "An example from the Hariku Developer SDK: press Shift+J and it counts the files in your Documents folder in the background, then tells you how many there are and how much space they take.",
+    "main": "main.py",
+    "language": "en",
+    "minimum_core_version": "2.0"
+}

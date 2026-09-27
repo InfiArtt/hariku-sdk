@@ -1,0 +1,9 @@
+{
+    "name": "Aruna Shopping List",
+    "version": "1.0.0",
+    "author": "Hariku SDK",
+    "description": "An example from the Hariku Developer SDK: keep a shopping list by talking to Aruna. Say \"add milk to my shopping list\" or \"tambahkan susu ke daftar belanja\", confirm with yes, and ask \"shopping list\" to hear it.",
+    "main": "main.py",
+    "language": "en",
+    "minimum_core_version": "2.9"
+}

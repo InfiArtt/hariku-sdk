@@ -1,0 +1,9 @@
+{
+    "name": "Hello Hotkey",
+    "version": "1.0.0",
+    "author": "Hariku SDK",
+    "description": "An example from the Hariku Developer SDK: press Shift+H in Hariku and it greets you; press it twice quickly and it also tells you the time.",
+    "main": "main.py",
+    "language": "en",
+    "minimum_core_version": "2.0"
+}

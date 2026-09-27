@@ -1,0 +1,17 @@
+{
+    "manifest": {
+        "language_name": "English",
+        "language_code": "en",
+        "translator": "Hariku SDK",
+        "email": "you@example.com",
+        "version": "1.0",
+        "core_version": "2.11",
+        "rtl": false
+    },
+    "messages": {
+        "action_say_proverb": "Say a proverb",
+        "action_open_guide": "Open the Proverbs guide",
+        "no_guide": "Proverbs has no guide in this installation.",
+        "guide_failed": "The Proverbs guide couldn't be opened."
+    }
+}

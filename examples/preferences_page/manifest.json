@@ -1,0 +1,9 @@
+{
+    "name": "Daily Goal",
+    "version": "1.0.0",
+    "author": "Hariku SDK",
+    "description": "An example from the Hariku Developer SDK: write your goal for the day on its page in Preferences, then press Shift+Y to hear it, with the date if you like.",
+    "main": "main.py",
+    "language": "en",
+    "minimum_core_version": "2.0"
+}

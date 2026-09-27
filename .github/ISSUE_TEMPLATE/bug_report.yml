@@ -1,0 +1,50 @@
+name: Bug in the SDK or its docs
+description: Something in this SDK is wrong, missing or unclear (the docs, the template, an example, a tool or a workflow).
+title: "[SDK] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for telling us. This form is for the SDK. For a problem in the Hariku app itself, open an issue at github.com/InfiArtt/hariku/issues instead. For a security problem, don't open an issue: follow store_guidelines/security_policy.txt.
+  - type: dropdown
+    id: part
+    attributes:
+      label: Which part of the SDK?
+      options:
+        - DEVELOPERS.md (the API guide)
+        - The template (template_extension)
+        - An example (examples)
+        - tools/check_extension.py
+        - tools/pack.py or tools/packager.py
+        - The store guidelines (store_guidelines)
+        - A workflow (.github/workflows)
+        - README or another page
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What is wrong?
+      description: What happened, or what the text says, and what you expected instead. Name the file and section, or the example.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: How to see it
+      description: The commands you ran and what they printed, or the code that behaves differently from the docs. Paste text rather than screenshots, so everyone can read it.
+      render: text
+  - type: input
+    id: hariku_version
+    attributes:
+      label: Hariku version
+      description: In Hariku, Help, About Hariku. Leave empty if it doesn't matter.
+      placeholder: "2.10.0"
+  - type: input
+    id: sdk_version
+    attributes:
+      label: SDK release or commit
+      description: The SDK release you downloaded, or the commit of this repository.
+      placeholder: "v2.10.0"

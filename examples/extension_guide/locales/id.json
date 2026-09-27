@@ -1,0 +1,17 @@
+{
+    "manifest": {
+        "language_name": "Bahasa Indonesia",
+        "language_code": "id",
+        "translator": "Hariku SDK",
+        "email": "you@example.com",
+        "version": "1.0",
+        "core_version": "2.11",
+        "rtl": false
+    },
+    "messages": {
+        "action_say_proverb": "Ucapkan sebuah peribahasa",
+        "action_open_guide": "Buka panduan Peribahasa",
+        "no_guide": "Peribahasa tidak punya panduan di instalasi ini.",
+        "guide_failed": "Panduan Peribahasa tidak bisa dibuka."
+    }
+}

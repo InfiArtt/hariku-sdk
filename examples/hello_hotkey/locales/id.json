@@ -1,0 +1,16 @@
+{
+    "manifest": {
+        "language_name": "Bahasa Indonesia",
+        "language_code": "id",
+        "translator": "Hariku SDK",
+        "email": "you@example.com",
+        "version": "1.0",
+        "core_version": "2.0",
+        "rtl": false
+    },
+    "messages": {
+        "action_greet": "Sapa aku",
+        "hello": "Halo! Senang mendengar kabarmu.",
+        "time_now": "Sekarang jam {time}."
+    }
+}
