@@ -2,16 +2,28 @@
 
 Welcome to the Hariku V2 extension development guide. This document covers everything you need to build, test, and distribute extensions for Hariku.
 
+**Get the Developer SDK** at [github.com/InfiArtt/hariku-sdk](https://github.com/InfiArtt/hariku-sdk).
+It has this guide, the extension template, small commented examples (a hotkey, an Aruna command,
+a Preferences page, a background task, a guide), the packager, a checker for your extension folder,
+and the store guidelines, synced with each Hariku release. Download the SDK ZIP from its releases,
+or press **Use this template** there to start a repository for your own extension: its workflow
+checks your extension on every push and attaches the packed `.hrk` to your GitHub releases.
+The template and the examples are under the **MIT License**, so you can copy them into an
+extension released under any license (see the
+[Hariku Extension Exception](https://github.com/InfiArtt/hariku-core/blob/main/LICENSE-EXCEPTION)).
+
 ## Table of Contents
 
 - [Quick Start](#quick-start)
 - [Extension Structure](#extension-structure)
 - [Manifest Reference](#manifest-reference)
+- [Your Extension's Guide](#your-extensions-guide)
 - [API Reference](#api-reference)
   - [Speech](#speech)
   - [Data Storage](#data-storage)
   - [UI Dialogs](#ui-dialogs)
   - [Document Viewer](#document-viewer)
+  - [Guides](#guides)
   - [Web View](#web-view)
   - [Calendar](#calendar)
   - [Clipboard](#clipboard)
@@ -24,6 +36,7 @@ Welcome to the Hariku V2 extension development guide. This document covers every
   - [Reminders](#reminders)
   - [Reminders from a Sentence](#reminders-from-a-sentence)
   - [Personal Profile](#personal-profile)
+  - [The InfiArtt Account](#the-infiartt-account)
   - [Placeholders from Extensions](#placeholders-from-extensions)
   - [Quiet Hours](#quiet-hours)
   - [Places](#places)
@@ -76,6 +89,9 @@ my_extension/
 ├── locales/            # Optional — Translation files
 │   ├── en.json
 │   └── id.json
+├── docs/               # Optional — Your guide, one folder per language (core 2.11)
+│   ├── en/guide.md
+│   └── id/guide.md
 └── lib/                # Optional — Bundled third-party libraries
     └── some_library/
         └── __init__.py
@@ -110,7 +126,7 @@ Every extension **must** have a `manifest.json` in its root folder.
 | Field | Type | Required | Description |
 |---|---|---|---|
 | `name` | string | ✅ | Human-readable extension name |
-| `version` | string | ✅ | Semantic version (e.g., `"1.0"`, `"2.3.1"`) |
+| `version` | string | ✅ | Two or three numbers with dots, MAJOR.MINOR or MAJOR.MINOR.PATCH (e.g., `"1.0"`, `"2.3.1"`); a pre-release may end in `a1`, `b1` or `rc1`. No `v` in front: the store compares versions as numbers, so raise it with every update |
 | `author` | string | ✅ | Author name |
 | `description` | string | ✅ | Short description |
 | `main` | string | ✅ | Entry point filename (usually `"main.py"`) |
@@ -130,6 +146,100 @@ fields into the store's registry (core 2.8+ reads them).
 
 ---
 
+## Your Extension's Guide
+
+*(Core 2.11.)* Every extension can ship its own guide. Users open it from Help, Extension
+guides..., from the Extension Manager's **Guide** button (Installed tab), or by asking Aruna
+("panduan orbit", "cara pakai dropbox", "guide for orbit", "how to use dropbox"). Hariku's own
+User Guide doesn't describe extensions; yours is where people learn how to use it.
+
+### Where it goes
+
+```
+my_extension/
+└── docs/
+    ├── en/guide.md     # English: always ship this one
+    └── id/guide.md     # Indonesian, and any other language code Hariku has
+```
+
+- The file is always `guide.md`, in a folder named after the language code (`en`, `id`, `de`,
+  `pt-BR`...).
+- Hariku opens the guide in the language Hariku speaks, else the English one, so always write
+  `docs/en/guide.md`.
+- `docs/` is packed into your `.hrk` like every other file (`tools/packager.py` keeps it).
+- A guide must be text of at most 512 KB, and it must really be inside your extension's folder
+  (a link or junction that leads elsewhere is ignored).
+
+### What Hariku shows
+
+Hariku turns the guide into a plain web page and opens it in the user's web browser. With NVDA,
+browse mode is on there: **H** and **Shift+H** jump from heading to heading, **1**, **2** and
+**3** by level, and **NVDA+F7** lists every heading. So your headings are how people find their
+way: give every task they'd look for a heading of its own. (When no browser can be opened, the
+guide shows as text in a window.)
+
+Hariku's converter knows a small part of Markdown, and shows everything else as plain text
+(nothing in a guide can become HTML or a script):
+
+| Write | For |
+|---|---|
+| `# Title` | The guide's title. **The first `#` heading is the title**: the page's title, the name in Help, Extension guides..., and a name Aruna knows your extension by. Use your extension's name in that language ("# Timer & Alarm", "# Kalkulator & Konversi"), once, on the first line. |
+| `## Section`, `### Subsection` | The sections. Don't skip a level (no `###` straight under `#`). |
+| A paragraph | Lines separated by a blank line; lines inside one are joined. |
+| `- item`, `1. item` | Lists. An item may go on over lines indented by two spaces or more. No nested lists. |
+| `` `code` `` | Short technical things: a file name, a folder, a value. |
+| `**bold**` | Sparingly. |
+| ```` ``` ```` fenced blocks | Code or output, kept as it is. |
+
+Not supported: links, images, tables, HTML, block quotes and italics.
+
+### How to write it
+
+- **Short and task-first.** One or two sentences on what the extension does, then one section
+  per task: "## Getting started", "## Setting an alarm", "## Settings", "## Keys and commands".
+  Start each section with what the user wants to do, then how. Small extensions need only a
+  few short sections.
+- **Say it the way it is on screen.** Quote labels exactly as your window and Preferences page
+  show them, in that language. Give the default keys, and say that commands without a key can
+  get one in Preferences, Input Gestures. List the sentences Aruna understands for you.
+- **Commands in double quotes**, as Hariku's own guides write them: type "bantuan" or "help".
+  Keep `code` for file names and values.
+- **Privacy**: when your extension sends something over the network, say what, and to whom.
+- **Indonesian**: Hariku speaks to its users as "kamu", not "Anda".
+- **Keep it true.** Update the guide when you change what it describes.
+
+A complete guide:
+
+```markdown
+# Tide Times
+
+Tide Times tells you when the sea is high and low at your main place.
+
+## Getting started
+
+Press Shift+O, or tell Aruna "tides today". It needs a place near the sea in
+Preferences, Places.
+
+## Settings
+
+In Preferences, Tide Times:
+
+- "Warn me before high tide" says so an hour before.
+- "Units" chooses metres or feet.
+
+## Keys and commands
+
+- Shift+O: "Say today's tides"
+
+Give it another key in Preferences, Input Gestures.
+```
+
+### Opening guides from your code
+
+See [Guides](#guides) in the API Reference.
+
+---
+
 ## API Reference
 
 All core modules are available via standard Python imports. No installation needed.
@@ -142,7 +252,7 @@ from core.speech import speak, TOLK_LOADED
 
 | Function / Variable | Description |
 |---|---|
-| `speak(text, interrupt=False)` | Speak text through the active screen reader (NVDA, JAWS, etc.). Set `interrupt=True` to cut off any current speech. *(core 2.7)* Right after the user runs your action from the command bar, Hariku Voice may say it instead (see [The Command Bar](#the-command-bar)); keep calling `speak()`, Hariku decides. |
+| `speak(text, interrupt=False)` | Speak text through the active screen reader (NVDA, JAWS, etc.). Set `interrupt=True` to cut off any current speech. *(core 2.7)* Right after the user runs your action from the command bar, Hariku Voice may say it instead (see [The Command Bar](#the-command-bar-aruna)); keep calling `speak()`, Hariku decides. |
 | `braille(text, interrupt=False)` | *(core 2.7)* Show text on a braille display without speaking it (for text something else reads aloud). Follows the user's braille setting. |
 | `silence()` | *(core 2.7)* Stop the screen reader's speech now, for example right before you listen to the microphone (through speakers it would talk into it). Braille is not affected. Returns whether the screen reader was asked. |
 | `TOLK_LOADED` | Boolean — `True` if the Tolk speech engine loaded successfully, `False` otherwise. Useful for checking screen reader availability. |
@@ -221,8 +331,11 @@ from ui.document_viewer import show_document
 | Function | Description |
 |---|---|
 | `show_document(parent, title, filename)` | Show a read-only text document in a dialog window. The viewer looks for the file in `docs/{current_language}/` first, then falls back to `docs/en/`. |
+| `show_text(parent, title, text)` | *(core 2.11)* Show a text you already have, read-only. |
 
-This is useful if your extension ships with documentation or help files.
+This is useful if your extension ships with documentation or help files. For your
+extension's guide, use `docs/<lang>/guide.md` instead (see [Your Extension's Guide](#your-extensions-guide)):
+Hariku finds it, and users get headings to jump between.
 
 **Example:**
 ```python
@@ -233,6 +346,36 @@ from ui.document_viewer import show_document
 parent = core.api.main_window_instance
 show_document(parent, "My Extension Help", "my_extension_help.txt")
 ```
+
+### Guides
+
+*(Core 2.11.)* Every installed extension's guide (see [Your Extension's Guide](#your-extensions-guide)),
+and Hariku's own User Guide. No wx in this module.
+
+```python
+import core.guides
+```
+
+| Function | Returns | Description |
+|---|---|---|
+| `core.guides.find_guide(ext_id, lang=None)` | `str` or `None` | The path of an installed extension's guide in `lang` (default: the language Hariku speaks), else the English one. A guide inside a `.hrk` is given as the archive's path followed by the member, as zipimport writes it: read it with `read_guide()`. `core.guides.CORE_ID` is Hariku's User Guide. |
+| `core.guides.has_guide(ext_id)` | `bool` | Whether it has a guide. |
+| `core.guides.list_guides()` | `list` | `(id, name)` of every installed extension that has a guide, by name (its title in Hariku's language). |
+| `core.guides.read_guide(path)` | `str` or `None` | A guide's text (at most `MAX_GUIDE_BYTES`, 512 KB). |
+| `core.guides.open_guide(ext_id)` | `bool` | Opens the guide in the web browser; `False` when there's none or it couldn't be opened. |
+| `core.guides.markdown_to_html(text, lang="en")` | `str` | A guide as a whole, plain HTML page (every character escaped, no scripts). |
+
+```python
+import core.guides
+import core.speech
+
+def on_help():
+    if not core.guides.open_guide("my_extension"):
+        core.speech.speak("The guide couldn't be opened.")
+```
+
+To show a guide in a window when the browser can't open, as Hariku does, use
+`ui.guides_dialog.show_guide(parent, ext_id)`.
 
 ---
 
@@ -475,8 +618,27 @@ import core.preferences
 | `core.preferences.register_panel(category, name, create_func, apply_func)` | Register a settings panel in the Preferences dialog. |
 | `core.preferences.get_all_panels()` | Returns a dictionary of all registered preference panels. Useful for introspection. |
 
-- `create_func(parent)` → Must return a `wx.Panel` instance.
-- `apply_func()` → Called when the user clicks OK.
+- `create_func(parent)` → Must return a `wx.Panel` instance. Preferences calls it the first time the user shows your page in that window, not when the window opens.
+- `apply_func()` → Called when the user presses OK or Apply, and only if your page was built in that window (a page never shown has nothing to save).
+- `ValidateChanges()` *(core 2.7)*, optional → A method of the panel `create_func` returned. When the user presses OK or Apply, Preferences calls it on every page built in that window, before any page saves. Return `None` when the input can be saved, or `(message, control)` when it can't: Preferences then saves nothing (no page's `apply_func` runs), shows your page, shows `message` in an error box, puts the focus on `control`, and stays open so the user can fix it. An exception raised in `ValidateChanges()` is logged, and the page counts as valid.
+
+**Refusing input the page can't save:**
+```python
+class MySettingsPanel(wx.Panel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        vbox = wx.BoxSizer(wx.VERTICAL)
+        vbox.Add(wx.StaticText(self, label="Check every (minutes):"), 0, wx.ALL, 5)
+        self.txt_minutes = wx.TextCtrl(self, value="30")      # its label comes first
+        vbox.Add(self.txt_minutes, 0, wx.ALL, 5)
+        self.SetSizer(vbox)
+
+    def ValidateChanges(self):
+        text = self.txt_minutes.GetValue().strip()
+        if not text.isdigit() or not 1 <= int(text) <= 1440:
+            return "Check every: type a number of minutes from 1 to 1440.", self.txt_minutes
+        return None
+```
 
 **Example:**
 ```python
@@ -676,6 +838,44 @@ result = core.quick_reminder.parse_text("bayar listrik tiap bulan tanggal 5 jam 
 if result.ok and not result.needs_fallback:
     core.quick_reminder.save_result(result)   # monthly on the 5th, 09:00
 ```
+
+---
+
+### The InfiArtt Account
+
+*(Core 2.11.)* The InfiArtt account Hariku is signed in to, for extensions with
+online features. The Hariku Account Manager extension signs in (OAuth with PKCE
+at infiartt.com), keeps the tokens and renews them, and provides the account
+here; your extension asks here, never by reading the Account Manager's data.
+
+```python
+import core.accounts
+
+session = core.accounts.current()        # a Session while signed in, else None
+if session is None:
+    if core.accounts.available():
+        core.accounts.open_sign_in()     # the Account Manager's page, to sign in
+    # else: the Account Manager isn't installed; say how to get it from the store
+else:
+    headers = {"Authorization": f"Bearer {session.token}"}   # for InfiArtt's own services
+```
+
+| Function | Returns | Description |
+|---|---|---|
+| `core.accounts.available()` | `bool` | Whether an account provider (the Account Manager) is loaded. |
+| `core.accounts.current()` | `Session` or `None` | `.token` (the access token) and `.username` while signed in; `None` when not signed in, the sign-in ran out, or there's no provider. Quick: from memory. |
+| `core.accounts.open_sign_in()` | `bool` | Opens the Account Manager's page in Preferences; `False` without a provider. |
+| `core.accounts.register_provider(session, sign_in=None, name="")` | `True` | For the Account Manager: `session()` returns a `Session` or `None`. |
+| `core.accounts.unregister_provider(session=None)` | `bool` | In its `teardown()`. |
+
+**Rules:** the token is a credential. Send it only to InfiArtt's own services,
+over HTTPS, to an exact host (not a pattern a lookalike could match), never
+along a redirect, and never write it to the log (a `Session`'s repr hides it).
+Say on your Preferences page and in your guide that you send it, and to whom.
+A 401 or 403 from an InfiArtt service means the sign-in ran out or was
+revoked: ask the user to sign in again (`open_sign_in()`). On older cores,
+check `hasattr(core, "accounts")` after `import core`, or listen to the
+Account Manager's `on_user_login` / `on_user_logout` events.
 
 ---
 
@@ -1014,7 +1214,7 @@ import core.commands
 **Ctrl+Alt+Backspace**, from anywhere (a global hotkey through `RegisterHotKey`; users can move it in Input Gestures), opens a small always-on-top window called "Hariku" with one field, "Say or type a command". Enter runs what was typed:
 
 - A reminder sentence (a trigger such as "ingatkan aku" or "remind me", or a date or time) gets the quick reminder's read-back ("..., Save?"); Enter again or "ya"/"simpan" saves it, "tidak"/"batal" or Escape doesn't.
-- Otherwise the text is matched against **every registered hotkey action**, by its description in the user's language and its aliases. A clear winner runs at once: the bar closes, focus goes back to the window that had it, and the action runs as its hotkey would, so a dialog it opens opens as usual. A close call asks "Did you mean …?" (Enter or "ya" runs it). Anything else: "I didn't understand".
+- Otherwise the text is matched against **every registered hotkey action**, by its description in the user's language and its aliases. A clear winner runs at once: the bar closes, focus goes back to the window that had it, and the action runs as its hotkey would, so a dialog it opens opens as usual. A close call asks "Did you mean …?" (Enter or "ya" runs it). Anything else: "I didn't understand", unless an extension's fallback proposes something first (core 2.11, see [When Aruna doesn't understand](#the-command-bar-aruna) below).
 - The bar's answers are spoken with Hariku Voice (`announce(text, "command")`), and the action's own `speak()` is routed there for a moment (`core.voice.route_speech`).
 
 Your extension's actions are commands already: register them with `core.hotkeys.register_action` (a key is optional; `None` works) and give them a clear description. Add the other ways people say them:
@@ -1030,6 +1230,8 @@ Your extension's actions are commands already: register them with `core.hotkeys.
 | `core.commands.vocabulary()` | `list` | Every command's name and aliases: the words a speech recogniser should expect. |
 
 How matching works (so you can choose good aliases): case, accents, punctuation and hyphens don't count, a letter said twice counts once, and filler words ("tolong", "ucapkan", "please", "the", "what") are dropped. Words are compared letter by letter, because speech recognisers get words wrong ("Gampak terbaru" still finds "gempa terbaru"). A phrase scores the F1 of how much of the text it explains and how much of it the text says, with words many commands share ("buka", "open", "hari") counting less, and the whole strings are compared too. A command runs at 0.80 or more when it leads the next by 0.10; from 0.55 Hariku asks. Aliases of two or three distinctive words work best; avoid aliases that are only a common word.
+
+**Filler words can't name a command.** Aruna drops filler words (`core.commands.FILLERS`) from what the user types or says, so saying a description or alias made only of fillers leaves nothing to compare, and the action is never found: "Say hello" and "Ucapkan halo" are all fillers and can't be run by saying them, while "Greet me" can ("greet" remains). Give every action a description with at least one word of its own, in every language you translate it into; `core.commands.words(text)` returns the words Aruna keeps from a text (`[]`: none).
 
 **Actions that only answer** *(core 2.8)*. With "Keep Aruna open after an answer" (Preferences, Aruna; on by default), an action that only says something runs with the bar still open, and what it `speak()`s shows in the bar's Last result. Every other action closes the bar first, as above, because it may open a window or act on the window that had the focus (typing into it, moving it). Name yours when it opens nothing and doesn't touch the focused window:
 
@@ -1063,6 +1265,7 @@ def teardown():
 | Function | Returns | Description |
 |---|---|---|
 | `core.commands.add_intent(intent_id, patterns, handler, title=None)` | `Intent` | Patterns in any language, each with exactly one `{text}` and at least one word of its own, before, after or around it. The words are matched like command names (case, accents and punctuation don't count, misheard words like "katat" still match "catat", but a longer word such as "catatan" doesn't), and fillers before the pattern ("tolong", "Aruna") are skipped. When several intents match, the pattern with more words of its own is asked first. A command with content comes before commands and dates ("timer 10 menit" is not a reminder), but after a reminder trigger ("ingatkan aku"). The same id again replaces it. |
+| `core.commands.add_intent(..., matcher=fn)` | `Intent` | *(core 2.11)* For sentences with no fixed words to make a pattern of, such as "25 x 4" or "2 feet in inches": `fn(text)` gets every sentence none of the intent's patterns matched and returns what `request.text` should hold (usually the text itself) when the sentence is clearly its own, else `None`. It runs for everything said to Aruna, on the UI thread: be quick (no network, no files) and strict, or you take other extensions' sentences. A sentence a matcher takes is asked last, after every pattern of every intent. `patterns` may then be empty. Check `getattr(core.commands, "INTENT_MATCHERS", False)` first; older cores don't take the argument. |
 | `core.commands.remove_intent(intent_id)` | `bool` | In `teardown()`. |
 | `core.commands.match_intents(text)` | `list` | The `IntentMatch`es (`.intent`, `.text`, `.score`) of a text, as Aruna sees them. |
 
@@ -1077,7 +1280,7 @@ def teardown():
 
 A handler that raises makes Aruna say "That command didn't work" (and it is logged). Everything your handler and `confirm()` speak with `core.speech.speak()` comes in Hariku Voice, like an action's answer.
 
-The Timer & Alarm extension (`extensions/timer_alarm`) is built on this: "alarm besok jam 5 pagi olahraga" is read back and set on "ya", "timer mie 3 menit" starts at once, and a handler that finds no alarm in the words ("alarm list") returns `None` so Aruna runs the command instead.
+The Timer & Alarm extension (`extensions/timer_alarm`) is built on this: "alarm besok jam 5 pagi olahraga" is read back and set on "ya", "timer mie 3 menit" starts at once, and a handler that finds no alarm in the words ("alarm list") returns `None` so Aruna runs the command instead. The Calculator & Converter extension (`extensions/calculator`) uses a matcher with no patterns where the core has one ("25 x 4", "5 km ke mil", "berapa 25 kali 4"), and a short list of lead-word patterns ("berapa {text}", "hitung {text}") on cores 2.9 and 2.10, so it runs on both. Keep patterns few and their words distinctive: every pattern's words also go into Voice Control's vocabulary prompt, where short words push out other commands' names.
 
 **Answers told in steps** *(core 2.9)*. Aruna's Last result collects what is spoken within a moment of the answer's last line. An answer with pauses between its steps (World Trip: the captain's announcement, the engines, the arrival, a phrase in another voice) keeps it open:
 
@@ -1117,7 +1320,48 @@ Before listening, silence the screen reader (`core.speech.silence()`) and Hariku
 - Recordings stay in memory or in a temporary file deleted right after use; never send them anywhere without asking the user first, and say so on your page.
 - Never install a keyboard hook. Global keys go through `core.hotkeys` (`RegisterHotKey`).
 
-**A future AI fallback:** `core.commands.set_fallback(handler)` registers `handler(text, commands)`, called on a worker thread for a text the rules didn't understand; it returns an action id or `None`. The bar only ever asks "Did you mean …?" about its answer; it never runs it straight away. Reserved for Hariku's own AI extension.
+**When Aruna doesn't understand (fallbacks)** *(core 2.11)*. When Aruna's rules don't understand a sentence, or only have a weak guess (a "Did you mean …?" scoring under `core.commands.FALLBACK_ASK_BELOW`, 0.65, with no reminder to offer instead), it can ask the fallbacks extensions add: an online AI (the Ask Hariku extension), a local model, anything that can guess what was meant. A fallback only *proposes*; Aruna always asks the user before doing it, and drops a proposal naming a command or intent that isn't registered. Declare `"minimum_core_version": "2.11"`, or check `getattr(core.commands, "FALLBACKS", False)`.
+
+```python
+import core.commands
+
+def guess(request):                       # a FallbackRequest, on a worker thread
+    if "rain" in request.text.lower():
+        return request.propose_command("Weather.show_forecast")      # "Did you mean …?"
+    if request.text.lower().startswith("tea"):
+        return request.propose_intent("Timer and Alarm.timer", "tea 5 minutes")
+    return None                           # no idea: the next fallback, then Aruna as before
+
+def register(bus):
+    core.commands.add_fallback(guess, is_enabled=lambda: settings["on"], name="My guesser")
+
+def teardown():
+    core.commands.remove_fallback(guess)
+```
+
+| Function | Returns | Description |
+|---|---|---|
+| `core.commands.add_fallback(handler, is_enabled=None, name="")` | `handler` | `handler(request)` is called on a worker thread for a sentence Aruna didn't understand. `is_enabled()`, asked on the UI thread before each sentence, must be quick (no network, no files); a fallback that is off costs nothing and no thread is started. Adding the same handler again replaces it. |
+| `core.commands.remove_fallback(handler)` | `bool` | In `teardown()`. |
+| `core.commands.has_fallback()` | `bool` | Whether any fallback is on. |
+| `core.commands.wants_fallback(decision)` | `bool` | Whether Aruna asks its fallbacks about a `Decision`. |
+| `core.commands.ask_fallbacks(request)` | proposal or `None` | What the command bar calls, on a worker thread: each fallback in turn on a thread of its own, until one proposes something or `request.deadline` passes. |
+
+`request` is a `core.commands.FallbackRequest`: `.text` (the sentence), `.source` (`"typed"` or `"voice"`), `.language` (Hariku's; the sentence may be in another language Aruna understands), `.commands` (every `Command`: `.id`, `.name`, `.title`), `.intents` (every `Intent`: `.id`, `.title`, `.patterns`), `.guess` (the `Command` of Aruna's weak guess, or `None`), `.deadline` and `.time_left()`. The handler returns one of:
+
+| Return | What Aruna does |
+|---|---|
+| `None` | Asks the next fallback. When none proposes anything, Aruna does what it would have done: its weak "Did you mean …?", or "I didn't understand". |
+| `request.propose_command(action_id)` | Asks "Did you mean: <title>?". Yes runs it, as a command the user typed. |
+| `request.propose_intent(intent_id, text)` | Asks "Did you mean: <title>, "<text>"?". Yes calls that intent's handler with `request.text` = `text`, and does what its `Reply` says. |
+| `core.commands.Decision("reminder", text, result=...)` | Reads the reminder back ("…, Save?"), as for a typed one. |
+| A `Reply` or a string | Said, or asked, as an intent's `Reply` is. |
+
+Aruna waits `core.commands.FALLBACK_TIMEOUT` seconds (6) for all its fallbacks together, showing "Aruna is thinking..." and taking new input all the while; a new message, Escape or closing Aruna makes a late answer too late, and it is dropped. Use `request.time_left()` as your network time-out. A handler that raises is logged and the next one is asked.
+
+**Rules:** a fallback that sends the sentence anywhere needs the user's consent first (an opt-in that is off until they turn it on, on your Preferences page, saying what is sent and to whom), and must send only what it needs: the sentence, and at most the names of commands. Never run anything yourself from a fallback; propose it.
+
+*(Core 2.7 to 2.10 had `core.commands.set_fallback(handler)`, reserved and unused: `handler(text, commands)` returning an action id. It still works, as a fallback that proposes that command.)*
 
 ### Morning Briefing and Evening Summary
 
@@ -1220,7 +1464,7 @@ my_extension/
 | `language_name` | ✅ | Human-readable name (e.g., "Bahasa Indonesia") |
 | `language_code` | ✅ | ISO code (e.g., `"en"`, `"id"`, `"ar"`) |
 | `translator` | ✅ | Name of the translator |
-| `email` | ✅ | Contact email for translation issues |
+| `email` | ✅ | Where to report translation issues: an email address or a web address. Hariku's own language files use `https://github.com/InfiArtt/hariku/issues`. Hariku doesn't show it; the key must be there |
 | `version` | ✅ | Version of the translation |
 | `core_version` | ❌ | Hariku version this translation targets |
 | `rtl` | ❌ | Set `true` for right-to-left languages (Arabic, Hebrew) |
@@ -1448,20 +1692,15 @@ from core import telemetry
 
 | Function | Returns | Description |
 |---|---|---|
-| `telemetry.is_enabled()` | `bool` | Returns `True` if the user has telemetry enabled (opt-out model, defaults to `True`). Useful if your extension collects any usage data — you should respect this setting. |
+| `telemetry.is_enabled()` | `bool` | Always `False` (since core 2.11). Kept so extensions that call it keep working. |
 
-> **Note:** The core's own telemetry ping is currently **disabled** (its old endpoint was retired and there is no replacement), so the core sends nothing. `is_enabled()` still reflects the user's preference — honor it if your extension collects data.
+> **Note:** Hariku collects no analytics or telemetry, and since core 2.11 Preferences has no telemetry setting (old `telemetry_enabled` values in Core.json are ignored). So `is_enabled()` always returns `False`: an extension that honours it sends no usage data. If your extension really needs to send any, ask the user first, in your extension, and say so in its description (see the store's privacy rules).
 
 **Example:**
 ```python
 from core import telemetry
 
-if telemetry.is_enabled():
-    # OK to send anonymous usage stats
-    pass
-else:
-    # User has opted out — do not send any data
-    pass
+telemetry.is_enabled()  # False: Hariku has no usage-data setting to give consent
 ```
 
 ---
@@ -1713,7 +1952,7 @@ the exact URLs. To publish your extension:
 10. **Use `_()` for all user-facing strings** if you want your extension to support multiple languages.
 11. **Always define `teardown()`** in your `main.py` to clean up resources (timers, threads, file handles) when the app shuts down. This prevents errors and resource leaks.
 12. **Stop your timers in `teardown()`.** Leaving timers running after unload will cause crashes.
-13. **Respect the user's telemetry preference.** If your extension collects any data, check `telemetry.is_enabled()` first.
+13. **Send no usage statistics without asking.** Hariku collects none, and `telemetry.is_enabled()` always returns `False`; if your extension must send any data, ask the user first and say so in its description.
 14. **Use `core.api.main_window_instance` as the parent** for any custom `wx.Dialog` you create. This ensures proper window stacking and accessibility.
 15. **Use `apply_rtl_layout()`** in your dialogs if you support RTL languages like Arabic or Hebrew.
 16. **Use `format_date()` for displaying dates** instead of formatting them yourself — this ensures dates are displayed in the user's language.

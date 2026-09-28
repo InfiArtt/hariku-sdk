@@ -3,10 +3,10 @@
 These files come from [InfiArtt/hariku-core](https://github.com/InfiArtt/hariku-core), Hariku's source, and
 `.github/workflows/sync.yml` updates them every day. Change them there, not here.
 
-## From the latest Hariku release: v2.10.0
+## From the latest Hariku release: v2.11.0
 
-- Release: https://github.com/InfiArtt/hariku/releases/tag/v2.10.0
-- Commit: [48c6d49](https://github.com/InfiArtt/hariku-core/commit/48c6d49b1a586cd3854e178871a3033955609682) (`48c6d49b1a586cd3854e178871a3033955609682`)
+- Release: https://github.com/InfiArtt/hariku/releases/tag/v2.11.0
+- Commit: [f6507ef](https://github.com/InfiArtt/hariku-core/commit/f6507ef413aac53d15399e5936159edffd053b28) (`f6507ef413aac53d15399e5936159edffd053b28`)
 
 Files:
 
@@ -16,7 +16,7 @@ Files:
 
 ## From main
 
-- Commit: [a48d388](https://github.com/InfiArtt/hariku-core/commit/a48d3881c55ed71db3f5314860036b5e7c719f64) (`a48d3881c55ed71db3f5314860036b5e7c719f64`)
+- Commit: [f6507ef](https://github.com/InfiArtt/hariku-core/commit/f6507ef413aac53d15399e5936159edffd053b28) (`f6507ef413aac53d15399e5936159edffd053b28`)
 
 Files (the template and the store's policies aren't tied to a Hariku version):
 
