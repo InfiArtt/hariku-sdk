@@ -16,7 +16,7 @@ Files:
 
 ## From main
 
-- Commit: [49b0239](https://github.com/InfiArtt/hariku-core/commit/49b0239daede3c33463fe33ea1d6fbc6115b6578) (`49b0239daede3c33463fe33ea1d6fbc6115b6578`)
+- Commit: [ef97e18](https://github.com/InfiArtt/hariku-core/commit/ef97e184334b8eb62b52d1290833e37d757ddd77) (`ef97e184334b8eb62b52d1290833e37d757ddd77`)
 
 Files (the template and the store's policies aren't tied to a Hariku version):
 
