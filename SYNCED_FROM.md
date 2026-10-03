@@ -6,7 +6,7 @@ These files come from [InfiArtt/hariku-core](https://github.com/InfiArtt/hariku-
 ## From the latest Hariku release: v2.12.1
 
 - Release: https://github.com/InfiArtt/hariku/releases/tag/v2.12.1
-- Commit: [49b0239](https://github.com/InfiArtt/hariku-core/commit/49b0239daede3c33463fe33ea1d6fbc6115b6578) (`49b0239daede3c33463fe33ea1d6fbc6115b6578`)
+- Commit: [2742e77](https://github.com/InfiArtt/hariku-core/commit/2742e7774465dac4dbc09111a3a4b4d9ed56465e) (`2742e7774465dac4dbc09111a3a4b4d9ed56465e`)
 
 Files:
 
@@ -16,7 +16,7 @@ Files:
 
 ## From main
 
-- Commit: [1673b76](https://github.com/InfiArtt/hariku-core/commit/1673b76da7ee5a318e50f4113760f1d3aefa17d9) (`1673b76da7ee5a318e50f4113760f1d3aefa17d9`)
+- Commit: [99d1045](https://github.com/InfiArtt/hariku-core/commit/99d1045f880aaed894634c2f16da3418245ac4b9) (`99d1045f880aaed894634c2f16da3418245ac4b9`)
 
 Files (the template and the store's policies aren't tied to a Hariku version):
 
