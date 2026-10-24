@@ -28,7 +28,7 @@ def fake_github(responses):
 
 def test_the_release_in_the_distribution_repository():
     get = fake_github({
-        "/repos/InfiArtt/hariku/releases/latest": {"tag_name": "v2.10.0", "html_url": RELEASE},
+        "/repos/InfiArtt/hariku/releases?per_page=100": [{"tag_name": "v2.10.0", "html_url": RELEASE}],
         "/repos/InfiArtt/hariku-core/git/ref/tags/v2.10.0": {"ref": "refs/tags/v2.10.0"},
     })
     assert sdk_sync.latest_release(get) == ("v2.10.0", RELEASE)
@@ -37,17 +37,38 @@ def test_the_release_in_the_distribution_repository():
 def test_a_release_in_hariku_core_comes_first():
     url = "https://github.com/InfiArtt/hariku-core/releases/tag/v2.11.0"
     get = fake_github({
-        "/repos/InfiArtt/hariku-core/releases/latest": {"tag_name": "v2.11.0", "html_url": url},
-        "/repos/InfiArtt/hariku/releases/latest": {"tag_name": "v2.10.0"},
+        "/repos/InfiArtt/hariku-core/releases?per_page=100": [{"tag_name": "v2.11.0", "html_url": url}],
+        "/repos/InfiArtt/hariku/releases?per_page=100": [{"tag_name": "v2.10.0"}],
         "/repos/InfiArtt/hariku-core/git/ref/tags/v2.11.0": {"ref": "refs/tags/v2.11.0"},
     })
     assert sdk_sync.latest_release(get) == ("v2.11.0", url)
 
 
+def test_data_releases_drafts_and_pre_releases_are_passed_over():
+    # As in InfiArtt/hariku, where GitHub marked fan-extensions Latest.
+    url = "https://github.com/InfiArtt/hariku/releases/tag/v2.12.1"
+    get = fake_github({
+        "/repos/InfiArtt/hariku/releases?per_page=100": [
+            {"tag_name": "fan-extensions"},
+            {"tag_name": "trivia-data"},
+            {"tag_name": "v3.0.0", "draft": True},
+            {"tag_name": "v2.13.0", "prerelease": True},
+            {"tag_name": "v2.9.0"},
+            {"tag_name": "v2.12.1", "html_url": url},
+            {"tag_name": "v2.12.0"},
+        ],
+        "/repos/InfiArtt/hariku-core/git/ref/tags/v2.12.1": {"ref": "refs/tags/v2.12.1"},
+    })
+    assert sdk_sync.latest_release(get) == ("v2.12.1", url)
+
+
 @pytest.mark.parametrize("responses, text", [
-    ({}, "has a release"),
-    ({"/repos/InfiArtt/hariku/releases/latest": {"tag_name": "v2.10.0"}}, "no such tag"),
-    ({"/repos/InfiArtt/hariku/releases/latest": {"tag_name": "2.10.0; rm -rf /"}}, "not vX.Y.Z"),
+    ({}, "has a vX.Y.Z release"),
+    ({"/repos/InfiArtt/hariku/releases?per_page=100": [{"tag_name": "fan-extensions"}]},
+     "has a vX.Y.Z release"),
+    ({"/repos/InfiArtt/hariku/releases?per_page=100": [{"tag_name": "2.10.0; rm -rf /"}]},
+     "has a vX.Y.Z release"),
+    ({"/repos/InfiArtt/hariku/releases?per_page=100": [{"tag_name": "v2.10.0"}]}, "no such tag"),
 ])
 def test_no_usable_release(responses, text):
     with pytest.raises(sdk_sync.SyncError, match=text):
