@@ -8,9 +8,12 @@ sdk_sync.py: what .github/workflows/sync.yml runs. Standard library only.
 
     sdk_sync.py latest
         Print tag=... and release_url=... (for $GITHUB_OUTPUT): the latest
-        Hariku release. Hariku's releases are published in InfiArtt/hariku
+        Hariku release, the highest vX.Y.Z that isn't a draft or a
+        pre-release. Hariku's releases are published in InfiArtt/hariku
         from tags of InfiArtt/hariku-core; a release in hariku-core itself
-        is used first, should there ever be one. The tag must exist in
+        is used first, should there ever be one. Releases of data under
+        other tags (fan-extensions, trivia-data) are passed over, even
+        when GitHub marks one of them Latest. The tag must exist in
         hariku-core.
 
     sdk_sync.py copy --tag T --tag-dir D --tag-sha S --main-dir M --main-sha S2 --release-url U
@@ -96,17 +99,19 @@ def latest_release(get_json):
     """(tag, release page URL) of the latest Hariku release. get_json(path)
     returns the JSON of a GitHub API path, or None for 404."""
     for repo in (CORE_REPO, DIST_REPO):
-        release = get_json(f"/repos/{repo}/releases/latest")
-        if not release or not release.get("tag_name"):
+        releases = get_json(f"/repos/{repo}/releases?per_page=100") or []
+        versions = [r for r in releases
+                    if not r.get("draft") and not r.get("prerelease")
+                    and TAG_RE.match(r.get("tag_name") or "")]
+        if not versions:
             continue
+        release = max(versions, key=lambda r: tuple(int(n) for n in r["tag_name"][1:].split(".")))
         tag = release["tag_name"]
-        if not TAG_RE.match(tag):
-            raise SyncError(f"{repo}'s latest release has the tag {tag!r}, not vX.Y.Z")
         if not get_json(f"/repos/{CORE_REPO}/git/ref/tags/{tag}"):
             raise SyncError(f"{repo}'s latest release is {tag}, but {CORE_REPO} has no such tag")
         url = release.get("html_url") or f"https://github.com/{repo}/releases/tag/{tag}"
         return tag, url
-    raise SyncError(f"Neither {CORE_REPO} nor {DIST_REPO} has a release")
+    raise SyncError(f"Neither {CORE_REPO} nor {DIST_REPO} has a vX.Y.Z release")
 
 
 # ------------------------------------------------------------
